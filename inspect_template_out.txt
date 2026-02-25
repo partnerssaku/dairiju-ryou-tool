@@ -1,0 +1,20 @@
+Sheet name: 原本
+H15: '株式会社\nTRINITY PARTNERS'
+H16: 'HarerubaseKariya\nグループホーム奏'
+H17: '代表取締役社長\u3000澤田昌志'
+H18: '0566-63-6817'
+H19: '0566-63-6818'
+H20: None
+H21: None
+H22: None
+C25: None
+D25: None
+E25: None
+
+Sheet name: 事業者情報
+C3: '株式会社TRINITYPARTNERS'
+C4: 'Ｈａｒｅｒｕｂａｓｅ\u3000Ｋａｒｉｙａグループホーム奏'
+C5: '代表取締役社長'
+C6: '澤田昌志'
+C7: '0566-63-6817'
+C8: '0566-63-6818'
