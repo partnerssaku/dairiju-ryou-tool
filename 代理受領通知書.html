@@ -155,6 +155,34 @@ var SERVICE_NAMES = {
   "65": "\u77ed\u671f\u5165\u6240"
 };
 
+// ==== 市町村番号マスタ（先頭5桁で照合） ====
+var MUNICIPALITY_CODES = {
+  // 愛知県 - 名古屋市
+  "23101":"名古屋市千種区","23102":"名古屋市東区","23103":"名古屋市北区","23104":"名古屋市西区",
+  "23105":"名古屋市中村区","23106":"名古屋市中区","23107":"名古屋市昭和区","23108":"名古屋市瑞穂区",
+  "23109":"名古屋市熱田区","23110":"名古屋市中川区","23111":"名古屋市港区","23112":"名古屋市南区",
+  "23113":"名古屋市守山区","23114":"名古屋市緑区","23115":"名古屋市名東区","23116":"名古屋市天白区",
+  // 愛知県 - 市部
+  "23201":"豊橋市","23202":"岡崎市","23203":"一宮市","23204":"瀬戸市","23205":"半田市",
+  "23206":"春日井市","23207":"豊川市","23208":"津島市","23209":"碧南市","23210":"刈谷市",
+  "23211":"豊田市","23212":"安城市","23213":"西尾市","23214":"蒲郡市","23215":"犬山市",
+  "23216":"常滑市","23217":"江南市","23219":"小牧市","23220":"稲沢市","23221":"新城市",
+  "23222":"東海市","23223":"大府市","23224":"知多市","23225":"知立市","23226":"尾張旭市",
+  "23227":"高浜市","23228":"岩倉市","23229":"豊明市","23230":"日進市","23231":"田原市",
+  "23232":"愛西市","23233":"清須市","23234":"北名古屋市","23235":"弥富市","23236":"みよし市",
+  "23237":"あま市","23238":"長久手市",
+  // 愛知県 - 郡部
+  "23302":"東郷町","23342":"豊山町","23362":"扶桑町","23424":"大治町","23425":"蟹江町",
+  "23427":"飛島村","23441":"阿久比町","23442":"東浦町","23445":"南知多町","23446":"美浜町",
+  "23447":"武豊町","23501":"幸田町","23561":"設楽町","23562":"東栄町","23563":"豊根村",
+  // 東京都 - 主要市部
+  "13201":"八王子市","13202":"立川市","13203":"武蔵野市","13204":"三鷹市","13205":"青梅市",
+  "13206":"府中市","13207":"昭島市","13208":"調布市","13209":"町田市","13210":"小金井市",
+  "13211":"小平市","13212":"日野市","13213":"東村山市","13214":"国分寺市","13215":"国立市",
+  "13218":"福生市","13219":"狛江市","13220":"東大和市","13221":"清瀬市","13222":"東久留米市",
+  "13223":"武蔵村山市","13224":"多摩市","13225":"稲城市","13227":"西東京市"
+};
+
 // ==== Init ====
 document.addEventListener("DOMContentLoaded", function() {
   // Decode embedded template
@@ -228,6 +256,7 @@ function parseCsv(text) {
       var userId = (row[7] || "").trim();
       var kanaName = (row[9] || "").trim();
       var targetMonth = (row[4] || "").trim();
+      var municipalityCode = (row[5] || "").trim();
       var serviceCost = parseInt(row[22], 10) || 0;
       var userBurden  = parseInt(row[23], 10) || 0;
       var proxyAmount = parseInt(row[29], 10) || 0;
@@ -236,8 +265,9 @@ function parseCsv(text) {
       var key = userId + "_" + targetMonth;
       if (!users[key]) {
         users[key] = { userId: userId, name: kanaName, month: targetMonth,
-          serviceCost: serviceCost, userBurden: userBurden,
-          proxyAmount: proxyAmount, specGrant: specGrant, serviceCode: "" };
+          municipalityCode: municipalityCode, serviceCost: serviceCost,
+          userBurden: userBurden, proxyAmount: proxyAmount, specGrant: specGrant,
+          serviceCode: "" };
       } else {
         users[key].serviceCost += serviceCost;
         users[key].userBurden  += userBurden;
@@ -363,6 +393,10 @@ async function generateExcel() {
       var kanjiName = "", municipality = "";
       var me = userMasters[userId] || userMasters[userId.replace(/^0+/, "")];
       if (me) { kanjiName = me.kanjiName || ""; municipality = me.municipality || ""; }
+      // 受給者情報に未登録の場合、CSVの市町村番号から自動変換
+      if (!municipality && data.municipalityCode) {
+        municipality = MUNICIPALITY_CODES[data.municipalityCode.substring(0, 5)] || "";
+      }
       // 漢字名が数値のみの場合は無効とみなしCSVのカナ名を使う
       if (/^\d+$/.test(kanjiName)) kanjiName = "";
       var displayName = kanjiName || data.name;
