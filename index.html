@@ -223,7 +223,7 @@ function parseCsv(text) {
     if (row.length < 3) continue;
     var recordId = row[2], subType = row.length > 3 ? row[3] : "";
 
-    if (recordId === "J131" && subType === "01") {
+    if ((recordId === "J131" || recordId === "J121") && subType === "01") {
       var userId = (row[7] || "").trim();
       var kanaName = (row[9] || "").trim();
       var targetMonth = (row[4] || "").trim();
@@ -245,8 +245,8 @@ function parseCsv(text) {
       }
     }
 
-    // J131 type 02: service TYPE code (2-digit, e.g. "33" = 共同生活援助)
-    if (recordId === "J131" && subType === "02") {
+    // J131/J121 type 02: service TYPE code (2-digit, e.g. "33" = 共同生活援助)
+    if ((recordId === "J131" || recordId === "J121") && subType === "02") {
       var uid2 = (row[7] || "").trim();
       var mon2 = (row[4] || "").trim();
       var sc2 = (row[8] || "").trim();
